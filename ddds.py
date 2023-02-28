@@ -1,9 +1,9 @@
 import cv2
-# Numpy for array related functions
+
 import numpy as np
-# Dlib for deep learning based Modules and face landmark detection
+
 import dlib
-# face_utils for basic operations of conversion
+
 from imutils import face_utils
 
 cap = cv2.VideoCapture(0)
@@ -12,7 +12,7 @@ cap = cv2.VideoCapture(0)
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-# status marking for current state
+
 sleep = 0
 drowsy = 0
 active = 0
