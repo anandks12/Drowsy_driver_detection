@@ -65,12 +65,13 @@ while True:
 
         landmarks = predictor(gray, face)
         landmarks = face_utils.shape_to_np(landmarks)
-
+        #eyse landmarks
 
         left_blink = blinked(landmarks[36], landmarks[37],
                              landmarks[38], landmarks[39], landmarks[40], landmarks[41])
         right_blink = blinked(landmarks[42], landmarks[43],
                               landmarks[44], landmarks[45], landmarks[46], landmarks[47])
+        #mouth landmarks
         mouth = mopen(landmarks[48], landmarks[50], landmarks[51],
                              landmarks[52], landmarks[54], landmarks[56],landmarks[57], landmarks[58])
 
