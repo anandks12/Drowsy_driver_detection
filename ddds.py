@@ -108,7 +108,7 @@ while True:
 
     cv2.imshow("Frame", frame)
 
-    cv2.imshow("Result of detector", face_frame) #<-- it shows the 68 landmarks on the face
+    cv2.imshow("Result of detector", face_frame) #<-- it shows the 68 landmark points on the face
     if cv2.waitKey(10) & 0xFF == ord('q'):
             break
 cap.release()
