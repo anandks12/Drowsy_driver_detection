@@ -44,7 +44,7 @@ def mopen(p1,p2,p3,p4,p5,p6,p7,p8):
     mar = num/(2.0*den)
     if (mar < 0.25) :
         return 2
-    elif ( compute(p3,p7) > 20 ) :
+    elif ( compute(p3,p7) > 25 ) :
         return 0
 
 
@@ -72,22 +72,23 @@ while True:
         right_blink = blinked(landmarks[42], landmarks[43],
                               landmarks[44], landmarks[45], landmarks[46], landmarks[47])
         #mouth landmarks
-        mouth = mopen(landmarks[48], landmarks[50], landmarks[51],
-                             landmarks[52], landmarks[54], landmarks[56],landmarks[57], landmarks[58])
+        mouth = mopen(landmarks[60], landmarks[50], landmarks[51],
+                             landmarks[52], landmarks[64], landmarks[56],landmarks[57], landmarks[58])
 
         if (left_blink == 0 and right_blink == 0):
             sleep += 1
             drowsy = 0
             active = 0
-            if (sleep > 6):
+            if (sleep > 30):
                 status = "SLEEPING !!!"
                 color = (255, 0, 0)
+
 
         elif (left_blink == 1 and right_blink == 1 or mouth == 0):
             sleep = 0
             active = 0
             drowsy += 1
-            if (drowsy > 6):
+            if (drowsy > 20):
                 status = "Drowsy !"
                 color = (0, 0, 255)
         else:
