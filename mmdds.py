@@ -1,3 +1,4 @@
+import scipy.spatial
 import mediapipe as mp
 import cv2
 import numpy as np
@@ -6,7 +7,7 @@ face_mesh = mp.solutions.face_mesh
 draw_utils = mp.solutions.drawing_utils
 landmark_style = draw_utils.DrawingSpec((0, 255, 0), thickness=1, circle_radius=1)
 connection_style = draw_utils.DrawingSpec((0, 0, 255), thickness=1, circle_radius=1)
-
+distanceModule = scipy.spatial.distance
 STATIC_IMAGE = False
 MAX_NO_FACES = 1
 DETECTION_CONFIDENCE = 0.6
@@ -24,25 +25,31 @@ LEFT_EYE_TOP_BOTTOM = [160,159,158,144, 145,153]
 LEFT_EYE_LEFT_RIGHT = [133, 33]
 RIGHT_EYE_TOP_BOTTOM =[385,386,387, 380,374,373]
 RIGHT_EYE_LEFT_RIGHT =[362,263]
-UPPER_LOWER_LIPS = [82,312,87,317]
+UPPER_LOWER_LIPS = [82,13,312,87,14,317]
 LEFT_RIGHT_LIPS = [78, 308]
 RIGHT_EYE = [ 362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385,384, 398 ]
 LEFT_EYE = [ 33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161 , 246 ]
 
 def compute(ptA, ptB):
-    dist = np.linalg.norm(ptA - ptB)
+    x1 = int(ptA.x * img_w)
+    y1 = int(ptA.y*img_h)
+    x2 = int(ptB.x*img_w)
+    y2 = int(ptB.y * img_h)
+    #dist = np.linalg.norm(ptA - ptB)
+    #dist = math.dist(ptA,ptB)
+    dist=distanceModule.euclidean([x1,y1],[x2,y2])
     return dist
 def blinked(output,s):
     for face in output:
         a = face.landmark[s[0]]
         b = face.landmark[s[3]]
-        c = face.landmark[s[1]]
-        d = face.landmark[s[4]]
+      #  c = face.landmark[s[1]]
+      #  d = face.landmark[s[4]]
         e = face.landmark[s[2]]
         f = face.landmark[s[5]]
         g = face.landmark[s[6]]
         h = face.landmark[s[7]]
-        up = compute(a,b ) + compute(c,d) + compute(e,f)
+        up = compute(a,b ) + compute(e,f)
         down = compute(g, h)
         ear = up / (2.0 * down)
 
@@ -54,13 +61,22 @@ def blinked(output,s):
     else:
         return 0
     #Mouth aspect ratio
-def mopen(p1,p2,p3,p4,p5,p6,p7,p8):
-    num = compute(p2,p8) + compute(p3,p7) + compute(p4,p6)
-    den = compute(p1,p5)
-    mar = num/(2.0*den)
+def mopen(output,s):
+    for face in output:
+        a = face.landmark[s[0]]
+        b = face.landmark[s[3]]
+        c = face.landmark[s[1]]
+        d = face.landmark[s[4]]
+        e = face.landmark[s[2]]
+        f = face.landmark[s[5]]
+        g = face.landmark[s[6]]
+        h = face.landmark[s[7]]
+        up = compute(a,b ) + compute(e,f)
+        down = compute(g, h)
+        mar = up / (2.0 * down)
     if (mar < 0.25) :
         return 2
-    elif ( compute(p3,p7) > 25 ) :
+    elif ( compute(c,d) > 25 ) :
         return 0
 
 def draw_landmarks(image, outputs, land_mark, color):
@@ -98,11 +114,34 @@ while True:
             # cv2.imshow("Result ", image_rgb)
             # F: collect all [x,y] pairs of all facial landamarks
             leye = blinked(outputs.multi_face_landmarks,LEFT_EYE_TOP_BOTTOM + LEFT_EYE_LEFT_RIGHT)
-            print(leye)
             reye = blinked(outputs.multi_face_landmarks,RIGHT_EYE_TOP_BOTTOM + RIGHT_EYE_LEFT_RIGHT)
+            mouth = mopen(outputs.multi_face_landmarks,UPPER_LOWER_LIPS + LEFT_RIGHT_LIPS)
             all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
 
+            if (leye == 0 or reye == 0):
+                sleep += 1
+                drowsy = 0
+                active = 0
+                if (sleep > 6):
+                    status = "SLEEPING !!!"
+                    color = (255, 0, 0)
+
+
+            elif (leye == 1 or reye == 1 or mouth == 0):
+                sleep = 0
+                active = 0
+                drowsy += 1
+                if (drowsy > 6):
+                    status = "Drowsy !"
+                    color = (0, 0, 255)
+            else:
+                drowsy = 0
+                sleep = 0
+                active += 1
+                if (active > 6):
+                    status = "Active :)"
+                    color = (0, 255, 0)
                 # G: right and left eye landmarks
             right_eye = all_landmarks[RIGHT_EYE]
             left_eye = all_landmarks[LEFT_EYE]
@@ -111,7 +150,7 @@ while True:
             cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.polylines(frame, [lips], True, (255, 0, 0), 1, cv2.LINE_AA)
-
+            cv2.putText(frame, status, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 4)
 
             cv2.imshow("Result of detector", frame)
             if cv2.waitKey(10) & 0xFF == ord('q'):

@@ -6,6 +6,7 @@ import dlib
 
 from imutils import face_utils
 
+
 cap = cv2.VideoCapture(0)
 
 
