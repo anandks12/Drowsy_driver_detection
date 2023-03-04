@@ -105,7 +105,7 @@ while True:
 
         for n in range(0, 68):
             (x, y) = landmarks[n]
-            cv2.circle(face_frame, (x, y), 1, (255, 255, 0), 1)
+            cv2.circle(face_frame, (x, y), 1, (255, 255, 0), -1)
 
     cv2.imshow("Frame", frame)
 
