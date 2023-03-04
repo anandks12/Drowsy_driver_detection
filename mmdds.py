@@ -34,10 +34,17 @@ def compute(ptA, ptB):
     return dist
 def blinked(output,s):
     for face in output:
-        for i in s:
-            up = compute(b, d)
-            down = compute(a, c)
-            ear = up / (2.0 * down)
+        a = face.landmark[s[0]]
+        b = face.landmark[s[3]]
+        c = face.landmark[s[1]]
+        d = face.landmark[s[4]]
+        e = face.landmark[s[2]]
+        f = face.landmark[s[5]]
+        g = face.landmark[s[6]]
+        h = face.landmark[s[7]]
+        up = compute(a,b ) + compute(c,d) + compute(e,f)
+        down = compute(g, h)
+        ear = up / (2.0 * down)
 
     # Eye aspect ratio
     if (ear > 0.25):
@@ -81,17 +88,18 @@ while True:
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         outputs = face_model.process(image_rgb)
         if outputs.multi_face_landmarks:
-            for face in outputs.multi_face_landmarks:
-                for i in LEFT_EYE_TOP_BOTTOM + RIGHT_EYE_TOP_BOTTOM:
-                    pt1=face.landmark[i]
-                    x=int(pt1.x*img_w)
-                    y=int(pt1.y*img_h)
-                    cv2.circle(image_rgb,(x,y),2,(100,100,0),-1)
-                    cv2.putText(image_rgb,str(i),(x,y),cv2.FONT_HERSHEY_PLAIN,1,(0,0,0),1)
-            cv2.imshow("Result ", image_rgb)
+            # for face in outputs.multi_face_landmarks:
+            #     for i in LEFT_EYE_TOP_BOTTOM + RIGHT_EYE_TOP_BOTTOM:
+            #         pt1=face.landmark[i]
+            #         x=int(pt1.x*img_w)
+            #         y=int(pt1.y*img_h)
+            #         cv2.circle(image_rgb,(x,y),2,(100,100,0),-1)
+            #         cv2.putText(image_rgb,str(i),(x,y),cv2.FONT_HERSHEY_PLAIN,1,(0,0,0),1)
+            # cv2.imshow("Result ", image_rgb)
             # F: collect all [x,y] pairs of all facial landamarks
-            #leye = blinked(outputs.multi_face_landmarks,LEFT_EYE_)
-            #reye = blinked(outputs.multi_face_landmarks,RIGHT_EYE)
+            leye = blinked(outputs.multi_face_landmarks,LEFT_EYE_TOP_BOTTOM + LEFT_EYE_LEFT_RIGHT)
+            print(leye)
+            reye = blinked(outputs.multi_face_landmarks,RIGHT_EYE_TOP_BOTTOM + RIGHT_EYE_LEFT_RIGHT)
             all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
 
