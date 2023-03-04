@@ -71,7 +71,7 @@ def mopen(output,s):
         f = face.landmark[s[5]]
         g = face.landmark[s[6]]
         h = face.landmark[s[7]]
-        up = compute(a,b ) + compute(e,f)
+        up = compute(a,b ) + compute(e,f) + compute(c,d)
         down = compute(g, h)
         mar = up / (2.0 * down)
     if (mar < 0.25) :
@@ -119,7 +119,7 @@ while True:
             all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
 
-            if (leye == 0 or reye == 0):
+            if (leye == 0 and reye == 0):
                 sleep += 1
                 drowsy = 0
                 active = 0
@@ -128,7 +128,7 @@ while True:
                     color = (255, 0, 0)
 
 
-            elif (leye == 1 or reye == 1 or mouth == 0):
+            elif (leye == 1 and reye == 1 or mouth == 0):
                 sleep = 0
                 active = 0
                 drowsy += 1
