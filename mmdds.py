@@ -12,19 +12,19 @@ MAX_NO_FACES = 1
 DETECTION_CONFIDENCE = 0.6
 TRACKING_CONFIDENCE = 0.5
 
-
 sleep = 0
 drowsy = 0
 active = 0
 status = ""
 color = (0, 0, 0)
+
 LIPS = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95,
         185, 40, 39, 37, 0, 267, 269, 270, 409, 415, 310, 311, 312, 13, 82, 81, 42, 183, 78]
-LEFT_EYE_TOP_BOTTOM = [386, 374]
-LEFT_EYE_LEFT_RIGHT = [263, 362]
-RIGHT_EYE_TOP_BOTTOM = [159, 145]
-RIGHT_EYE_LEFT_RIGHT = [133, 33]
-UPPER_LOWER_LIPS = [13, 14]
+LEFT_EYE_TOP_BOTTOM = [160,159,158,144, 145,153]
+LEFT_EYE_LEFT_RIGHT = [133, 33]
+RIGHT_EYE_TOP_BOTTOM =[385,386,387, 380,374,373]
+RIGHT_EYE_LEFT_RIGHT =[362,263]
+UPPER_LOWER_LIPS = [82,312,87,317]
 LEFT_RIGHT_LIPS = [78, 308]
 RIGHT_EYE = [ 362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385,384, 398 ]
 LEFT_EYE = [ 33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161 , 246 ]
@@ -32,11 +32,12 @@ LEFT_EYE = [ 33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 
 def compute(ptA, ptB):
     dist = np.linalg.norm(ptA - ptB)
     return dist
-def lblinked(a,b,c,d):
-    for face in LEFT_EYE_TOP_BOTTOM and LEFT_EYE_LEFT_RIGHT:
-        up = compute(b, d)
-        down = compute(a, c)
-        ear = up / (2.0 * down)
+def blinked(output,s):
+    for face in output:
+        for i in s:
+            up = compute(b, d)
+            down = compute(a, c)
+            ear = up / (2.0 * down)
 
     # Eye aspect ratio
     if (ear > 0.25):
@@ -80,7 +81,17 @@ while True:
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         outputs = face_model.process(image_rgb)
         if outputs.multi_face_landmarks:
+            for face in outputs.multi_face_landmarks:
+                for i in LEFT_EYE_TOP_BOTTOM + RIGHT_EYE_TOP_BOTTOM:
+                    pt1=face.landmark[i]
+                    x=int(pt1.x*img_w)
+                    y=int(pt1.y*img_h)
+                    cv2.circle(image_rgb,(x,y),2,(100,100,0),-1)
+                    cv2.putText(image_rgb,str(i),(x,y),cv2.FONT_HERSHEY_PLAIN,1,(0,0,0),1)
+            cv2.imshow("Result ", image_rgb)
             # F: collect all [x,y] pairs of all facial landamarks
+            #leye = blinked(outputs.multi_face_landmarks,LEFT_EYE_)
+            #reye = blinked(outputs.multi_face_landmarks,RIGHT_EYE)
             all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
 
@@ -92,7 +103,6 @@ while True:
             cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.polylines(frame, [lips], True, (255, 0, 0), 1, cv2.LINE_AA)
-
 
 
             cv2.imshow("Result of detector", frame)
