@@ -54,10 +54,10 @@ def blinked(output,s):
         ear = up / (2.0 * down)
 
     # Eye aspect ratio
-    if (ear > 0.25):
+    if (ear > 0.20):
         return 2
-    elif (ear > 0.21 and ear <= 0.25):
-        return 1
+    # elif (ear > 0.21 and ear <= 0.25):
+    #     return 1
     else:
         return 0
     #Mouth aspect ratio
@@ -74,10 +74,10 @@ def mopen(output,s):
         up = compute(a,b ) + compute(e,f) + compute(c,d)
         down = compute(g, h)
         mar = up / (2.0 * down)
-    if (mar < 0.25) :
+    if (mar < 1.2) :
         return 2
-    elif ( compute(c,d) > 25 ) :
-        return 0
+    elif ( compute(c,d) > 15 ) :
+        return 1
 
 def draw_landmarks(image, outputs, land_mark, color):
     height, width = image.shape[:2]
@@ -123,31 +123,34 @@ while True:
                 sleep += 1
                 drowsy = 0
                 active = 0
-                if (sleep > 6):
+                if (sleep > 30):
                     status = "SLEEPING !!!"
                     color = (255, 0, 0)
 
 
-            elif (leye == 1 and reye == 1 or mouth == 0):
+            elif (leye == 1 and reye == 1 or mouth == 1):
                 sleep = 0
                 active = 0
                 drowsy += 1
-                if (drowsy > 6):
+                if (drowsy > 10):
                     status = "Drowsy !"
                     color = (0, 0, 255)
             else:
                 drowsy = 0
                 sleep = 0
                 active += 1
-                if (active > 6):
+                if (active ):
                     status = "Active :)"
                     color = (0, 255, 0)
-                # G: right and left eye landmarks
+
             right_eye = all_landmarks[RIGHT_EYE]
             left_eye = all_landmarks[LEFT_EYE]
             lips = all_landmarks[LIPS]
-                # H: draw only landmarks of the eyes over the image
+            le=[13,14]
+            l=all_landmarks[le]
+
             cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
+            cv2.polylines(frame, [l], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.polylines(frame, [lips], True, (255, 0, 0), 1, cv2.LINE_AA)
             cv2.putText(frame, status, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 4)
