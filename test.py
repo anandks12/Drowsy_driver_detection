@@ -2,7 +2,11 @@ import scipy.spatial
 import mediapipe as mp
 import cv2
 import numpy as np
+import math
 
+# Initialize the MediaPipe Pose Estimation model
+mp_pose = mp.solutions.pose
+pose_estimator = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 face_mesh = mp.solutions.face_mesh
 draw_utils = mp.solutions.drawing_utils
 landmark_style = draw_utils.DrawingSpec((0, 255, 0), thickness=1, circle_radius=1)
@@ -96,7 +100,10 @@ face_model = face_mesh.FaceMesh(static_image_mode=STATIC_IMAGE,
                                 max_num_faces=MAX_NO_FACES,
                                 min_detection_confidence=DETECTION_CONFIDENCE,
                                 min_tracking_confidence=TRACKING_CONFIDENCE)
+
+# Initialize the video capture
 cap = cv2.VideoCapture(0)
+
 while True:
     result, frame = cap.read()
     frame = cv2.flip(frame, 1)
@@ -105,6 +112,22 @@ while True:
     if result:
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         outputs = face_model.process(image_rgb)
+        results = pose_estimator.process(rgb_frame)
+
+        # Get the coordinates of the landmarks on the head
+        head_landmarks = results.pose_landmarks.landmark[
+                         mp_pose.PoseLandmark.NOSE.value:mp_pose.PoseLandmark.RIGHT_EAR.value + 1]
+        hl = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
+                       outputs.pose_landmarks[0].landmark])
+        if head_landmarks:
+            nose_x, nose_y = head_landmarks[0].x, head_landmarks[0].y
+            neck_x, neck_y = head_landmarks[1].x, head_landmarks[1].y
+            rshoulder_x, rshoulder_y = head_landmarks[3].x, head_landmarks[3].y
+
+            dx = neck_x - nose_x
+            dy = neck_y - nose_y
+            angle = -1 * (180 / 3.14159) * math.atan2(dy, dx)
+            angle = round(angle, 2)
         if outputs.multi_face_landmarks:
             # for face in outputs.multi_face_landmarks:
             #     for i in jaw:
@@ -121,6 +144,13 @@ while True:
             mouth = mopen(outputs.multi_face_landmarks,UPPER_LOWER_LIPS + LEFT_RIGHT_LIPS + jaw)
             all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
+
+
+                # Print the head angle on the frame
+
+
+        # Calculate the angle between the nose, neck, and right shoulder landmarks
+
 
             if (leye == 0 and reye == 0):
                 sleep += 1
@@ -151,14 +181,24 @@ while True:
             lips = all_landmarks[LIPS]
             le=[13,152]
             l=all_landmarks[le]
+            h=hl
 
             cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [l], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.polylines(frame, [lips], True, (255, 0, 0), 1, cv2.LINE_AA)
             cv2.putText(frame, status, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 4)
+            cv2.putText(frame, f"Head angle: {angle}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.polylines(frame, head_landmarks[0], True, (0, 255, 0), 1, cv2.LINE_AA)
 
-            cv2.imshow("Result of detector", frame)
-            if cv2.waitKey(10) & 0xFF == ord('q'):
+
+
+            cv2.imshow('Head and face', frame)
+
+        # Exit the loop if the 'q' key is pressed
+            if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+# Release the video capture and destroy all windows
 cap.release()
+cv2.destroyAllWindows()
