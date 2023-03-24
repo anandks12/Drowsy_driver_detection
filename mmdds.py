@@ -72,13 +72,19 @@ def mopen(output,s):
         f = face.landmark[s[5]]
         g = face.landmark[s[6]]
         h = face.landmark[s[7]]
-        i=face.landmark[s[8]]
+        # i=face.landmark[s[8]]
+        cv2.putText(img=frame, text='Max mouth length:' + str(compute(c, d)), fontFace=0,
+                    org=(10, 200), fontScale=0.5, color=(255, 0, 0))
+
         up = compute(a,b ) + compute(e,f) + compute(c,d)
         down = compute(g, h)
         mar = up / (2.0 * down)
-    if (mar < 1.2) :
+        cv2.putText(img=frame, text='Max mouth length:' + str(mar), fontFace=0,
+                    org=(10, 300), fontScale=0.5, color=(255, 0, 0))
+    if (mar < .25) :
         return 2
-    elif ( compute(c,i) > 10 ) :
+    elif ( compute(c,d) > 20 ) :
+
         return 1
 
 def draw_landmarks(image, outputs, land_mark, color):
@@ -126,7 +132,7 @@ while True:
                 sleep += 1
                 drowsy = 0
                 active = 0
-                if (sleep > 30):
+                if (sleep > 50):
                     status = "SLEEPING !!!"
                     color = (255, 0, 0)
 
@@ -135,21 +141,21 @@ while True:
                 sleep = 0
                 active = 0
                 drowsy += 1
-                if (drowsy > 20):
+                if (drowsy > 40):
                     status = "Drowsy !"
                     color = (0, 0, 255)
-            else:
+            elif(mouth==2 and leye==2 and reye==2):
                 drowsy = 0
                 sleep = 0
                 active += 1
-                if (active ):
+                if active:
                     status = "Active :)"
                     color = (0, 255, 0)
 
             right_eye = all_landmarks[RIGHT_EYE]
             left_eye = all_landmarks[LEFT_EYE]
             lips = all_landmarks[LIPS]
-            le=[13,152]
+            le=[13,14]
             l=all_landmarks[le]
 
             cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
@@ -157,6 +163,11 @@ while True:
             cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.polylines(frame, [lips], True, (255, 0, 0), 1, cv2.LINE_AA)
             cv2.putText(frame, status, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 4)
+            cv2.putText(frame, text='Max drowsy frames: ' + str(drowsy), fontFace=0,
+                       org=(10, 30), fontScale=0.5, color=(0, 255, 0))
+            cv2.putText(img=frame, text='Max sleepy frames:'  + str(sleep), fontFace=0,
+                       org=(10, 50), fontScale=0.5, color=(0, 255, 0))
+
 
             cv2.imshow("Result of detector", frame)
             if cv2.waitKey(10) & 0xFF == ord('q'):
