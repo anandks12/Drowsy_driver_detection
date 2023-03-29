@@ -79,7 +79,7 @@ def mopen(output,s):
         up = compute(a,b ) + compute(e,f) + compute(c,d)
         down = compute(g, h)
         mar = up / (2.0 * down)
-        cv2.putText(img=frame, text='Max mouth length:' + str(mar), fontFace=0,
+        cv2.putText(img=frame, text='MAR ratio:' + str(mar), fontFace=0,
                     org=(10, 300), fontScale=0.5, color=(255, 0, 0))
     if (mar < .25) :
         return 2
