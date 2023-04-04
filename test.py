@@ -20,6 +20,7 @@ TRACKING_CONFIDENCE = 0.5
 sleep = 0
 drowsy = 0
 active = 0
+head = 0
 status = ""
 color = (0, 0, 0)
 
@@ -117,18 +118,9 @@ while True:
         # Get the coordinates of the landmarks on the head
         head_landmarks = results.pose_landmarks.landmark[
                          mp_pose.PoseLandmark.NOSE.value:mp_pose.PoseLandmark.RIGHT_EAR.value + 1]
-        hl = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
-                       outputs.pose_landmarks[0].landmark])
-        if head_landmarks:
-            nose_x, nose_y = head_landmarks[0].x, head_landmarks[0].y
-            neck_x, neck_y = head_landmarks[1].x, head_landmarks[1].y
-            rshoulder_x, rshoulder_y = head_landmarks[3].x, head_landmarks[3].y
 
-            dx = neck_x - nose_x
-            dy = neck_y - nose_y
-            angle = -1 * (180 / 3.14159) * math.atan2(dy, dx)
-            angle = round(angle, 2)
-        if outputs.multi_face_landmarks:
+
+        if outputs.multi_face_landmarks or head_landmarks:
             # for face in outputs.multi_face_landmarks:
             #     for i in jaw:
             #         pt1=face.landmark[i]
@@ -145,7 +137,14 @@ while True:
             all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
 
+            nose_x, nose_y = head_landmarks[0].x, head_landmarks[0].y
+            neck_x, neck_y = head_landmarks[1].x, head_landmarks[1].y
+            rshoulder_x, rshoulder_y = head_landmarks[3].x, head_landmarks[3].y
 
+            dx = neck_x - nose_x
+            dy = neck_y - nose_y
+            angle = -1 * (180 / 3.14159) * math.atan2(dy, dx)
+            angle = round(angle, 2)
                 # Print the head angle on the frame
 
 
@@ -164,11 +163,27 @@ while True:
             elif ((leye == 1 and reye == 1) or mouth == 1):
                 sleep = 0
                 active = 0
+                head = 0
                 drowsy += 1
                 if (drowsy > 20):
                     status = "Drowsy !"
                     color = (0, 0, 255)
+            elif angle > 85 or angle < 40:
+                if leye == 2 and reye == 2 :
+                    head = 0
+                    drowsy = 0
+                    sleep = 0
+                    active += 1
+                    if (active):
+                        status = "Active :)"
+                        color = (0, 255, 0)
+                else :
+                    head += 1
+                    if head > 40:
+                        status = "SLEEPING !!!"
+                        color = (255, 0, 0)
             else:
+                head = 0
                 drowsy = 0
                 sleep = 0
                 active += 1
@@ -181,15 +196,15 @@ while True:
             lips = all_landmarks[LIPS]
             le=[13,152]
             l=all_landmarks[le]
-            h=hl
+
 
             cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [l], True, (0, 0, 255), 1, cv2.LINE_AA)
             cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
             cv2.polylines(frame, [lips], True, (255, 0, 0), 1, cv2.LINE_AA)
             cv2.putText(frame, status, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 4)
-            cv2.putText(frame, f"Head angle: {angle}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.polylines(frame, head_landmarks[0], True, (0, 255, 0), 1, cv2.LINE_AA)
+            cv2.putText(frame, f"Head angle: {angle}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+
 
 
 
