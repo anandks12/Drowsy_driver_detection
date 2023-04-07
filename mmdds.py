@@ -97,7 +97,7 @@ def mopen(output,s):
                         org=(450, 100), fontScale=0.5, color=(255, 0, 0))
         if (mar < .25) :
             return 2
-        elif ( compute(c,d) > 17 ) or (mar >0.9):
+        elif ( compute(c,d) > 17 ) or (mar >0.95):
 
             return 1
     else :
