@@ -5,6 +5,7 @@ import numpy as np
 import math
 
 
+
 mp_pose = mp.solutions.pose
 pose_estimator = mp_pose.Pose(static_image_mode=False, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
@@ -73,7 +74,7 @@ def blinked(output,s):
             return 0
     else :
         cv2.imshow("Result of detector", frame)
-        cv2.putText(frame, "Face not detected ", (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+
     #Mouth aspect ratio
 def mopen(output,s):
     if output is not None:
@@ -96,7 +97,7 @@ def mopen(output,s):
                         org=(450, 100), fontScale=0.5, color=(255, 0, 0))
         if (mar < .25) :
             return 2
-        elif ( compute(c,d) > 17 ) :
+        elif ( compute(c,d) > 17 ) or (mar >0.9):
 
             return 1
     else :
@@ -123,7 +124,7 @@ while True:
             # cv2.putText(frame, "Face not detected ", (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
 
-        if outputs.multi_face_landmarks is not None or results.pose_landmarks is not None :
+        if outputs.multi_face_landmarks is not None and results.pose_landmarks is not None :
             # for face in outputs.multi_face_landmarks:
             #     for i in jaw:
             #         pt1=face.landmark[i]
@@ -137,21 +138,18 @@ while True:
             leye = blinked(outputs.multi_face_landmarks,LEFT_EYE_TOP_BOTTOM + LEFT_EYE_LEFT_RIGHT)
             reye = blinked(outputs.multi_face_landmarks,RIGHT_EYE_TOP_BOTTOM + RIGHT_EYE_LEFT_RIGHT)
             mouth = mopen(outputs.multi_face_landmarks,UPPER_LOWER_LIPS + LEFT_RIGHT_LIPS + jaw)
-
-            head_landmarks = results.pose_landmarks.landmark[
-                             mp_pose.PoseLandmark.NOSE.value:mp_pose.PoseLandmark.RIGHT_EAR.value + 1]
-            nose_x, nose_y = head_landmarks[0].x, head_landmarks[0].y
-            neck_x, neck_y = head_landmarks[1].x, head_landmarks[1].y
-            rshoulder_x, rshoulder_y = head_landmarks[3].x, head_landmarks[3].y
-
-            dx = neck_x - nose_x
-            dy = neck_y - nose_y
-            angle = -1 * (180 / 3.14159) * math.atan2(dy, dx)
-            angle = round(angle, 2)
+            if results.pose_landmarks is not None:
+                head_landmarks = results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE.value:mp_pose.PoseLandmark.RIGHT_EAR.value + 1]
+                nose_x, nose_y = head_landmarks[0].x, head_landmarks[0].y
+                neck_x, neck_y = head_landmarks[1].x, head_landmarks[1].y
+                rshoulder_x, rshoulder_y = head_landmarks[3].x, head_landmarks[3].y
+                dx = neck_x - nose_x
+                dy = neck_y - nose_y
+                angle = -1 * (180 / 3.14159) * math.atan2(dy, dx)
+                angle = round(angle, 2)
             if outputs.multi_face_landmarks is not None :
                 all_landmarks = np.array([np.multiply([p.x, p.y], [img_w, img_h]).astype(int) for p in
                                       outputs.multi_face_landmarks[0].landmark])
-
                 if (leye == 0 and reye == 0):
                     sleep += 1
                     drowsy = 0
@@ -160,7 +158,6 @@ while True:
                     if (sleep > 40):
                         status = "SLEEPING !!!"
                         color = (255, 0, 0)
-
 
                 elif ((leye == 1 and reye == 1) or mouth == 1):
                     sleep = 0
@@ -180,14 +177,10 @@ while True:
                         if (head > 40):
                             status = "Are you drowning???"
                             color = (0, 0, 255)
-                    # else :
-                    #     head += 1
-                    #     if head > 40:
-                    #         status =  "SLEEPING !!!"
-                    #         color = (255, 0, 0)
                 elif (mouth == 2 and leye == 2 and reye == 2):
                     drowsy = 0
                     sleep = 0
+                    head=0
                     active += 1
                     if active:
                         status = "Active :)"
@@ -198,7 +191,6 @@ while True:
                 lips = all_landmarks[LIPS]
                 le = [13, 14]
                 l = all_landmarks[le]
-
                 cv2.polylines(frame, [left_eye], True, (0, 0, 255), 1, cv2.LINE_AA)
                 cv2.polylines(frame, [l], True, (0, 0, 255), 1, cv2.LINE_AA)
                 cv2.polylines(frame, [right_eye], True, (0, 255, 0), 1, cv2.LINE_AA)
@@ -210,9 +202,12 @@ while True:
                             org=(10, 50), fontScale=0.5, color=(0, 255, 0))
                 cv2.putText(frame, f"Head angle: {angle}", (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
                 cv2.putText(frame, f"Head frames : {head} ", (10, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            elif angle > 60 and angle <=65 :
+                cv2.putText(frame, "Are You Drowning ???", (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.putText(frame, f"Head angle: {angle}", (10, 300), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
             else:
-                cv2.imshow("Result of detector", frame)
                 cv2.putText(frame, "Face not detected ", (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0, 255), 2)
+
 
 
 
@@ -222,7 +217,11 @@ while True:
             cv2.imshow("Result of detector", frame)
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
-
-
+        else:
+            cv2.putText(frame, "Person not detected ", (10, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.imshow("Result of detector", frame)
+            
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                break
 
 cap.release()
