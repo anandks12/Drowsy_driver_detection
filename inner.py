@@ -34,7 +34,8 @@ class Ui_MainWindow(object):
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
         self.frame.setGeometry(QRect(0, -10, 681, 441))
-        self.frame.setStyleSheet(u"background-image: url(\"C:/Users/ADMIN/Desktop/finalp image/logo.jpg\")")
+        self.frame.setStyleSheet(u"background-image: url(\"D:/DDDS/logo.jpg\")")
+
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.frame_2 = QFrame(self.frame)
