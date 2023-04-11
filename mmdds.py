@@ -3,8 +3,7 @@ import mediapipe as mp
 import cv2
 import numpy as np
 import math
-import sys
-from PySide6.QtWidgets import QApplication, QPushButton
+
 
 
 
@@ -72,9 +71,9 @@ def on_button(si):
                                 org=(450, 200), fontScale=0.5,thickness=0,color=(255, 0, 0))
 
             # Eye aspect ratio
-                if (ear > 0.20):
+                if (ear > 0.18):
                     return 2
-                elif (ear > 0.21 and ear <= 0.25):
+                elif (ear > 0.18 and ear <= 0.25):
                      return 1
                 else:
                     return 0
@@ -163,7 +162,7 @@ def on_button(si):
                             drowsy = 0
                             head = 0
                             active = 0
-                            if (sleep > 40):
+                            if (sleep > 30):
                                 status = "SLEEPING !!!"
                                 color = (255, 0, 0)
 
@@ -172,27 +171,28 @@ def on_button(si):
                             active = 0
                             head = 0
                             drowsy += 1
-                            if (drowsy > 30):
+                            if (drowsy > 25):
                                 status = "Drowsy !"
                                 color = (0, 0, 255)
-                        elif angle > 85 or angle < 45:
-                            if leye == 2 and reye == 2:
 
-                                drowsy = 0
-                                sleep = 0
-                                active += 1
-                                head += 1
-                                if (head > 40):
-                                    status = "Are you drowning???"
-                                    color = (0, 0, 255)
-                        elif (mouth == 2 and leye == 2 and reye == 2):
+                        elif (angle > 43 and angle < 50) or ( (angle>=68 and angle <71) or (not (angle > 61 and angle <= 81)) ) or (angle > 81 and angle < 90):
+
+                            drowsy = 0
+                            sleep = 0
+                            active += 1
+                            head += 1
+                            if (head > 30):
+                                status = "Are you drowning???"
+                                color = (0, 0, 255)
+                        elif (mouth == 2 and leye == 2 and reye == 2) or (angle>70 and angle >75) :
                             drowsy = 0
                             sleep = 0
                             head=0
                             active += 1
-                            if active:
+                            if  active:
                                 status = "Active :)"
                                 color = (0, 255, 0)
+
 
                         right_eye = all_landmarks[RIGHT_EYE]
                         left_eye = all_landmarks[LEFT_EYE]
@@ -233,6 +233,5 @@ def on_button(si):
                     break
 
         cap.release()
-    else:
-        print("Choose category")
+
 

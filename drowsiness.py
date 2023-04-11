@@ -3,9 +3,10 @@ from PySide6.QtGui import QColor
 from inner import Ui_MainWindow
 from splash_screen import Ui_SplashSreen
 from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QMainWindow, QProgressBar, QPushButton, QSizePolicy,
-                               QWidget, QGraphicsDropShadowEffect)
+                               QWidget, QGraphicsDropShadowEffect,QMessageBox)
 import sys
 from mmdds import on_button
+
 
 counter=0
 
@@ -20,6 +21,13 @@ class MainWindow (QMainWindow) :
 
     def on_button_click(self):
         selected_item = self.ui.comboBox.currentText()
+        if selected_item != 'Driver drowsiness':
+            msg_box = QMessageBox()
+            msg_box.setText("Please select a category!")
+            msg_box.setWindowTitle("Error")
+            msg_box.exec()
+
+
         print(selected_item)
         on_button(selected_item)
 
