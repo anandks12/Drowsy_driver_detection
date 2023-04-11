@@ -79,8 +79,7 @@ class Ui_SplashSreen(object):
         self.label_2 = QLabel(self.dropshadowframe)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setGeometry(QRect(90, -40, 481, 341))
-        self.label_2.setPixmap(QPixmap(u"D:/DDDS/bhjyvwfx_4x.png"))
-
+        self.label_2.setPixmap(QPixmap(u"bhjyvwfx_4x.png"))
         self.label_2.setScaledContents(True)
         self.frame.raise_()
         self.frame_3.raise_()

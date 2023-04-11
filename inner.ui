@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-image: url(&quot;C:/Users/ADMIN/Desktop/finalp image/logo.jpg&quot;)</string>
+     <string notr="true">background-image: url(&quot;D:/DDDS/logo.jpg&quot;)</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
@@ -83,6 +83,7 @@
       <font>
        <family>Times New Roman</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -148,7 +149,7 @@ selection-color: rgb(255, 14, 50);</string>
      <x>0</x>
      <y>0</y>
      <width>686</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

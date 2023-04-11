@@ -152,7 +152,7 @@ QProgressBar ::chunk{
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../finalp image/bhjyvwfx_4x.jpg</pixmap>
+      <pixmap>bhjyvwfx_4x.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>

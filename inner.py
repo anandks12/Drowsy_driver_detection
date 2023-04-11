@@ -20,11 +20,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QMainWindow,
     QWidget)
 
 
-
-
-#selected_item = ''
 class Ui_MainWindow(object):
-
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
@@ -35,7 +31,6 @@ class Ui_MainWindow(object):
         self.frame.setObjectName(u"frame")
         self.frame.setGeometry(QRect(0, -10, 681, 441))
         self.frame.setStyleSheet(u"background-image: url(\"D:/DDDS/logo.jpg\")")
-
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.frame_2 = QFrame(self.frame)
@@ -51,12 +46,10 @@ class Ui_MainWindow(object):
         self.frame_3.setFrameShape(QFrame.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.comboBox = QComboBox(self.frame)
-
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.setObjectName(u"comboBox")
-
         self.comboBox.setGeometry(QRect(430, 120, 171, 22))
         font = QFont()
         font.setFamilies([u"Times New Roman"])
@@ -74,21 +67,18 @@ class Ui_MainWindow(object):
         self.Run = QPushButton(self.frame)
         self.Run.setObjectName(u"Run")
         self.Run.setGeometry(QRect(470, 350, 75, 24))
-        self.Run.setStyleSheet(u"background-color: rgb(255, 5, 59);\n"             
+        self.Run.setStyleSheet(u"background-color: rgb(255, 5, 59);\n"
 "selection-color: rgb(255, 14, 50);")
-
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 686, 22))
+        self.menubar.setGeometry(QRect(0, 0, 686, 26))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -98,10 +88,7 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"CATEGORY", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Driver drowsiness", None))
         self.comboBox.setItemText(2, QCoreApplication.translate("MainWindow", u"Change alarm sound", None))
+
         self.Run.setText(QCoreApplication.translate("MainWindow", u"Run", None))
-
-
-
-
     # retranslateUi
 
