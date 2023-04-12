@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QMainWindow,
     QMenuBar, QPushButton, QSizePolicy, QStatusBar,
     QWidget)
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
@@ -86,8 +85,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"CATEGORY", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Driver drowsiness", None))
-        self.comboBox.setItemText(2, QCoreApplication.translate("MainWindow", u"Change alarm sound", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Video Detection", None))
+        self.comboBox.setItemText(2, QCoreApplication.translate("MainWindow", u"Real Time Detection", None))
 
         self.Run.setText(QCoreApplication.translate("MainWindow", u"Run", None))
     # retranslateUi

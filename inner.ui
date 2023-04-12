@@ -99,12 +99,12 @@ color: rgb(0, 0, 0);</string>
      </item>
      <item>
       <property name="text">
-       <string>Driver drowsiness</string>
+       <string>Video Detection</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Change alarm sound</string>
+       <string>Real Time Detection</string>
       </property>
      </item>
     </widget>

@@ -21,15 +21,14 @@ class MainWindow (QMainWindow) :
 
     def on_button_click(self):
         selected_item = self.ui.comboBox.currentText()
-        if selected_item != 'Driver drowsiness':
+        if selected_item != 'Real Time Detection' and selected_item != 'Video Detection':
             msg_box = QMessageBox()
             msg_box.setText("Please select a category!")
             msg_box.setWindowTitle("Error")
             msg_box.exec()
-
-
-        print(selected_item)
-        on_button(selected_item)
+        else:
+            print(selected_item)
+            on_button(selected_item)
 
 
 
